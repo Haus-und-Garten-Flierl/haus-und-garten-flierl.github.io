@@ -99,13 +99,17 @@ const heroImg=new Image();
 heroImg.onload=()=>{
   heroCtx.clearRect(0,0,heroCanvas.width,heroCanvas.height);
   heroCtx.drawImage(heroImg,0,0,1024,1536);
-  const bold22='700 22px Arial, sans-serif';
-  heroCtx.font=bold22; heroCtx.fillStyle='#111'; heroCtx.textAlign='center'; heroCtx.textBaseline='middle';
-  heroCtx.fillStyle='#fff'; heroCtx.fillRect(557,670,108,28); heroCtx.fillRect(718,670,93,28);
-  heroCtx.fillStyle='#111'; heroCtx.fillText('ab 6 €/lfm',611,688); heroCtx.fillText('ab 12 €/lfm',764.5,688);
-  heroCtx.fillStyle='#fff'; heroCtx.fillRect(0,0,0,0);
-  heroCtx.font='400 13px Arial, sans-serif'; heroCtx.textAlign='left'; heroCtx.textBaseline='alphabetic'; heroCtx.fillStyle='#1e322d';
-  heroCtx.fillText('Form- / Pflegeschnitt',333,689); heroCtx.fillText('(ab 6 €/lfm)',333,704);
+  // Bestehende Preisangaben im eingebetteten Bild sauber ersetzen.
+  heroCtx.fillStyle='#fff';
+  heroCtx.fillRect(540,668,160,31);
+  heroCtx.fillRect(700,668,140,31);
+  heroCtx.fillRect(320,684,180,29);
+  heroCtx.font='700 22px Arial, sans-serif';
+  heroCtx.textAlign='center';
+  heroCtx.textBaseline='middle';
+  heroCtx.fillStyle='#111';
+  heroCtx.fillText('ab 6 €/lfm',620,683);
+  heroCtx.fillText('ab 12 €/lfm',770,683);
 };
 heroImg.src='assets/IMG_0606.png';
 </script>
