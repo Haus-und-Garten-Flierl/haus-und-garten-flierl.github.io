@@ -29,6 +29,7 @@ body{overflow-x:hidden}
 .hero-anfrage{left:4.5%;top:32.8%;width:31%;height:4.2%}
 .calc-area{left:2%;top:38%;width:96%;height:21%;cursor:pointer}
 .footer-anfrage{right:2%;top:94.4%;width:18%;height:3.2%}
+.calendar-anfrage{left:55.8%;top:63.3%;width:21.5%;height:5.2%}
 
 .overlay{position:fixed;inset:0;background:rgba(0,24,17,.70);display:none;align-items:center;justify-content:center;padding:18px;z-index:30;line-height:1.35}
 .overlay.open{display:flex}
@@ -101,6 +102,7 @@ body{overflow-x:hidden}
 <button class="hot hero-anfrage" aria-label="Anfrage starten" onclick="openContact()"></button>
 <button class="hot calc-area" aria-label="Richtpreis-Rechner öffnen" onclick="openCalc()"></button>
 <button class="hot footer-anfrage" aria-label="Anfrage starten" onclick="openContact()"></button>
+<button class="hot calendar-anfrage" aria-label="Termin sichern – Kalender öffnen" onclick="openCalendar()"></button>
 </main>
 
 <!-- PRICE CALCULATOR: opened only by Heckenschnitt / price-finding areas -->
@@ -118,6 +120,30 @@ body{overflow-x:hidden}
 <button class="btn lime" onclick="usePriceAndContact()">Richtpreis übernehmen & Anfrage senden →</button>
 <button class="btn green" onclick="closeAll()">Weiter auf der Seite</button>
 </div>
+</div></div>
+
+<!-- APPOINTMENT CALENDAR -->
+<div class="overlay" id="calendarOverlay" role="dialog" aria-modal="true" aria-labelledby="calendarTitle">
+<div class="panel">
+<div class="panel-head"><div><h2 id="calendarTitle">Termin sichern</h2><p class="lead">Wählen Sie zuerst, was Sie benötigen. Die verfügbare Zeit richtet sich automatisch nach der Terminart und – beim Heckenschnitt – nach der Heckenlänge.</p></div><button class="close" onclick="closeAll()">Schließen</button></div>
+<div class="price-grid">
+<div class="price-card"><h3>Besichtigungstermin</h3>
+<p style="margin:0 0 12px">Persönliche Besichtigung vor Ort zur Einschätzung von Umfang, Aufwand und Termin.</p>
+<div class="info-item"><b>Montag · Donnerstag · Freitag</b>17:00–20:00 Uhr · 45 Minuten</div>
+<div class="action-row"><button class="btn lime" onclick="openCalendarSetup('besichtigung')">Kalender für Besichtigung öffnen →</button></div>
+</div>
+<div class="price-card"><h3>Heckenschnitt</h3>
+<p style="margin:0 0 12px">Samstags zwischen 08:00 und 17:00 Uhr. Die reservierte Zeit wird automatisch aus der Heckenlänge bestimmt.</p>
+<div class="info-item"><b>bis 15 lfm</b>4 Stunden · 08:00–12:00 oder entsprechend verfügbar</div>
+<div class="info-item"><b>16–24 lfm</b>6 Stunden</div>
+<div class="info-item"><b>ab 25 lfm</b>ganzer Samstag · 08:00–17:00 Uhr</div>
+<div class="action-row"><button class="btn lime" onclick="openCalendarSetup('heckenschnitt')">Kalender für Heckenschnitt öffnen →</button></div>
+</div>
+</div>
+<div class="info-item" style="margin-top:16px"><b>Urlaub</b>Vom 04.11. bis einschließlich 25.11.2026 sind keine Termine buchbar.</div>
+<div class="info-item" style="margin-top:11px"><b>Wichtig</b>Bereits belegte oder von mir extern blockierte Zeiten werden im Live-Kalender nicht mehr zur Buchung angeboten.</div>
+<div id="calendarSetupNote" class="success" style="margin-top:16px"></div>
+<p class="form-note">Der Live-Kalender wird über die externe Kalenderverbindung eingebunden. So kann ich Termine auch außerhalb der Webseite blockieren und diese Zeiten werden automatisch berücksichtigt.</p>
 </div></div>
 
 <!-- CONTACT FORM -->
@@ -285,7 +311,8 @@ Die Seite für „Über mich“ wird aktuell vorbereitet. Die wichtigsten Inform
 
 <script>
 const rates={pflege:[6,8,12],rueck:[12,16,22]};
-const overlays=['calcOverlay','contactOverlay','pricesOverlay','faqOverlay','aboutOverlay'];
+const overlays=['calcOverlay','contactOverlay','pricesOverlay','faqOverlay','aboutOverlay','calendarOverlay'];
+const CAL_BOOKING_URL='';
 
 function closeAll(){overlays.forEach(id=>document.getElementById(id).classList.remove('open'));document.body.style.overflow='';}
 function show(id){closeAll();document.getElementById(id).classList.add('open');document.body.style.overflow='hidden';}
@@ -294,6 +321,15 @@ function openCalc(){show('calcOverlay');setTimeout(()=>document.getElementById('
 function openPrices(){show('pricesOverlay');}
 function openFaq(){show('faqOverlay');}
 function openAbout(){show('aboutOverlay');}
+function openCalendar(){show('calendarOverlay');}
+function openCalendarSetup(kind){
+ const note=document.getElementById('calendarSetupNote');
+ if(CAL_BOOKING_URL){ window.open(CAL_BOOKING_URL,'_blank','noopener'); return; }
+ note.classList.add('show');
+ note.textContent=kind==='besichtigung'
+  ? 'Die Besichtigungs-Buchung ist vorbereitet. Nach der Verbindung des Cal.com-Geschäftskalenders wird hier der Live-Kalender geöffnet.'
+  : 'Die Heckenschnitt-Buchung ist vorbereitet. Nach der Verbindung des Cal.com-Geschäftskalenders wird hier der Live-Kalender geöffnet.';
+}
 function openContact(prefill){show('contactOverlay');if(prefill){document.getElementById('laenge').value=prefill.len||'';document.getElementById('hoehe').value=prefill.height||'Bis 1,50 m';document.getElementById('schnittart').value=prefill.type||'Form-/Pflegeschnitt';document.getElementById('schnittgut').value=prefill.waste||'Ja, bitte entsorgen';document.getElementById('richtpreis').value=prefill.price||'';}}
 
 function calculate(){
