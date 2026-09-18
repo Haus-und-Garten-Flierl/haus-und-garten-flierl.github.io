@@ -149,7 +149,7 @@ body{overflow-x:hidden}
 <!-- CONTACT FORM -->
 <div class="overlay" id="contactOverlay" role="dialog" aria-modal="true" aria-labelledby="contactTitle">
 <div class="panel">
-<div class="panel-head"><div><h2 id="contactTitle">Ihre Heckenschnitt-Anfrage</h2><p class="lead">Schicken Sie mir Ihre Daten – ich melde mich zur Terminabstimmung persönlich bei Ihnen.</p></div><button class="close" onclick="closeAll()">Schließen</button></div>
+<div class="panel-head"><div><h2 id="contactTitle">Ihre Heckenschnitt-Anfrage</h2><p class="lead">Schicken Sie mir Ihre Daten – ich melde mich persönlich bei Ihnen.</p></div><button class="close" onclick="closeAll()">Schließen</button></div>
 <div id="success" class="success">Vielen Dank! Ihre Anfrage wurde erfolgreich übermittelt. Ich melde mich schnellstmöglich bei Ihnen.</div>
 <form name="heckenschnitt-anfrage" id="contactForm" method="POST" data-netlify="true" netlify-honeypot="bot-field">
 <input type="hidden" name="form-name" value="heckenschnitt-anfrage">
@@ -161,10 +161,11 @@ body{overflow-x:hidden}
 <div class="field"><label for="ort">PLZ & Ort *</label><input id="ort" name="plz-ort" required autocomplete="postal-code"></div>
 <div class="field"><label for="termin">Gewünschter Termin</label><input id="termin" name="gewuenschter-termin" placeholder="z. B. Oktober 2026"></div>
 <div class="field"><label for="laenge">Heckenlänge (m)</label><input id="laenge" name="heckenlaenge" inputmode="decimal"></div>
+<div class="field" id="richtpreisField" style="display:none"><label for="richtpreis">Richtpreis</label><input id="richtpreis" name="richtpreis" readonly></div>
 <div class="field"><label for="hoehe">Heckenhöhe</label><select id="hoehe" name="heckenhoehe"><option>Bis 1,50 m</option><option>1,51–2,50 m</option><option>Über 2,50 m</option></select></div>
 <div class="field"><label for="schnittart">Schnittart</label><select id="schnittart" name="schnittart"><option>Form-/Pflegeschnitt</option><option>Rückschnitt</option></select></div>
 <div class="field"><label for="schnittgut">Schnittgut</label><select id="schnittgut" name="schnittgut"><option>Ja, bitte entsorgen</option><option>Nein, Schnittgut bleibt vor Ort</option></select></div>
-<div class="field"><label for="richtpreis">Richtpreis</label><input id="richtpreis" name="richtpreis" readonly></div>
+<div class="field" id="richtpreisField" style="display:none"><label for="richtpreis">Richtpreis</label><input id="richtpreis" name="richtpreis" readonly></div>
 <div class="field full"><label for="nachricht">Nachricht</label><textarea id="nachricht" name="nachricht" placeholder="Gerne weitere Angaben zu Ihrer Hecke, Zufahrt oder Terminwunsch."></textarea></div>
 <div class="field full"><label><input type="checkbox" name="datenschutz-zustimmung" required> Ich stimme der Verarbeitung meiner Angaben zur Bearbeitung meiner Anfrage zu. *</label></div>
 </div>
@@ -335,7 +336,22 @@ function openCalendarSetup(kind){
   ? 'Die Besichtigungs-Buchung ist vorbereitet. Nach der Verbindung des Cal.com-Geschäftskalenders wird hier der Live-Kalender geöffnet.'
   : 'Die Heckenschnitt-Buchung ist vorbereitet. Nach der Verbindung des Cal.com-Geschäftskalenders wird hier der Live-Kalender geöffnet.';
 }
-function openContact(prefill){show('contactOverlay');if(prefill){document.getElementById('laenge').value=prefill.len||'';document.getElementById('hoehe').value=prefill.height||'Bis 1,50 m';document.getElementById('schnittart').value=prefill.type||'Form-/Pflegeschnitt';document.getElementById('schnittgut').value=prefill.waste||'Ja, bitte entsorgen';document.getElementById('richtpreis').value=prefill.price||'';}}
+function openContact(prefill){
+  show('contactOverlay');
+  const rf=document.getElementById('richtpreisField');
+  const ri=document.getElementById('richtpreis');
+  if(prefill){
+    document.getElementById('laenge').value=prefill.len||'';
+    document.getElementById('hoehe').value=prefill.height||'Bis 1,50 m';
+    document.getElementById('schnittart').value=prefill.type||'Form-/Pflegeschnitt';
+    document.getElementById('schnittgut').value=prefill.waste||'Ja, bitte entsorgen';
+    ri.value=prefill.price||'';
+    rf.style.display='block';
+  }else{
+    ri.value='';
+    rf.style.display='none';
+  }
+}
 
 function calculate(){
  const n=parseFloat(String(document.getElementById('len').value).replace(',','.'));
@@ -357,18 +373,29 @@ function usePriceAndContact(){
 document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)closeAll();}));
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeAll();});
 
-document.getElementById('contactForm').addEventListener('submit',async e=>{
- e.preventDefault();
- const form=e.currentTarget;
- const data=new URLSearchParams(new FormData(form));
- try{
-  const res=await fetch('/',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:data.toString()});
-  if(!res.ok)throw new Error('submit');
-  form.style.display='none';
-  document.getElementById('success').classList.add('show');
- }catch(err){
-  form.submit();
- }
+document.getElementById('contactForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const form=e.currentTarget;
+  const fd=new FormData(form);
+  const lines=[
+    'Neue Anfrage über Haus & Garten Flierl',
+    '',
+    'Name: '+(fd.get('name')||''),
+    'E-Mail: '+(fd.get('email')||''),
+    'Telefon: '+(fd.get('telefon')||''),
+    'PLZ & Ort: '+(fd.get('plz-ort')||''),
+    'Gewünschter Termin: '+(fd.get('gewuenschter-termin')||''),
+    'Heckenlänge: '+(fd.get('heckenlaenge')||''),
+    'Heckenhöhe: '+(fd.get('heckenhoehe')||''),
+    'Schnittart: '+(fd.get('schnittart')||''),
+    'Schnittgut: '+(fd.get('schnittgut')||''),
+    'Richtpreis: '+(fd.get('richtpreis')||''),
+    '',
+    'Nachricht:',
+    fd.get('nachricht')||''
+  ];
+  const subject='Neue Anfrage – Haus & Garten Flierl';
+  window.location.href='mailto:haus-und-garten.flierl@gmx.de?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(lines.join('\n'));
 });
 </script>
 </body>
