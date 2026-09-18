@@ -330,11 +330,12 @@ function openAbout(){show('aboutOverlay');}
 function openCalendar(){show('calendarOverlay');}
 function openCalendarSetup(kind){
  const note=document.getElementById('calendarSetupNote');
- if(CAL_BOOKING_URL){ window.open(CAL_BOOKING_URL,'_blank','noopener'); return; }
+ const url=kind==='besichtigung' ? CAL_BOOKING_URLS.besichtigung
+  : kind==='heckenschnitt15' ? CAL_BOOKING_URLS.heckenschnitt15
+  : kind==='heckenschnitt16_24' ? CAL_BOOKING_URLS.heckenschnitt16_24
+  : CAL_BOOKING_URLS.heckenschnitt25;
+ if(url){ window.open(url,'_blank','noopener'); return; }
  note.classList.add('show');
- note.textContent=kind==='besichtigung'
-  ? 'Die Besichtigungs-Buchung ist vorbereitet. Nach der Verbindung des Cal.com-Geschäftskalenders wird hier der Live-Kalender geöffnet.'
-  : 'Die Heckenschnitt-Buchung ist vorbereitet. Nach der Verbindung des Cal.com-Geschäftskalenders wird hier der Live-Kalender geöffnet.';
 }
 function openContact(prefill){
   show('contactOverlay');
