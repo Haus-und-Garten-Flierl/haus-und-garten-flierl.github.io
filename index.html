@@ -137,7 +137,7 @@ body{overflow-x:hidden}
 <div class="info-item"><b>bis 15 lfm</b>4 Stunden · 08:00–12:00 oder entsprechend verfügbar</div>
 <div class="info-item"><b>16–24 lfm</b>6 Stunden</div>
 <div class="info-item"><b>ab 25 lfm</b>ganzer Samstag · 08:00–17:00 Uhr</div>
-<div class="action-row"><button class="btn lime" onclick="openCalendarSetup('heckenschnitt')">Kalender für Heckenschnitt öffnen →</button></div>
+<div class="action-row"><button class="btn lime" onclick="openCalendarSetup('heckenschnitt15')">Kalender für Heckenschnitt öffnen →</button></div>
 </div>
 </div>
 <div class="info-item" style="margin-top:16px"><b>Urlaub</b>Vom 04.11. bis einschließlich 25.11.2026 sind keine Termine buchbar.</div>
@@ -312,7 +312,12 @@ Die Seite für „Über mich“ wird aktuell vorbereitet. Die wichtigsten Inform
 <script>
 const rates={pflege:[6,8,12],rueck:[12,16,22]};
 const overlays=['calcOverlay','contactOverlay','pricesOverlay','faqOverlay','aboutOverlay','calendarOverlay'];
-const CAL_BOOKING_URL='';
+const CAL_BOOKING_URLS={
+  besichtigung:'https://cal.com/haus-garten-flierl/besichtigung-vor-ort',
+  heckenschnitt15:'https://cal.com/haus-garten-flierl/heckenschnitt-bis-15-lfm',
+  heckenschnitt16_24:'https://cal.com/haus-garten-flierl/heckenschnitt-16-24-lfm',
+  heckenschnitt25:'https://cal.com/haus-garten-flierl/heckenschnitt-ab-25-lfm'
+};
 
 function closeAll(){overlays.forEach(id=>document.getElementById(id).classList.remove('open'));document.body.style.overflow='';}
 function show(id){closeAll();document.getElementById(id).classList.add('open');document.body.style.overflow='hidden';}
